@@ -1,0 +1,51 @@
+# =============================================================================
+# .gitignore
+# =============================================================================
+# Files and folders that Git should NEVER track.
+# Committing these would expose secrets or clutter the repository.
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ── Environment & Secrets ─────────────────────────────────────────────────────
+.env
+# CRITICAL: Never commit .env — it contains passwords and secret keys!
+# Use .env.example as the template instead.
+
+# ── Database ──────────────────────────────────────────────────────────────────
+*.db
+*.sqlite3
+
+# ── Node / Frontend ───────────────────────────────────────────────────────────
+node_modules/
+dist/
+.vite/
+*.local
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+# (docker-compose.yml IS committed — it's config, not secrets)
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/

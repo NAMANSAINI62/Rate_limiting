@@ -1,0 +1,93 @@
+# =============================================================================
+# docker-compose.yml
+# =============================================================================
+# What is this file?
+#   Docker Compose is a tool that lets you define and run multi-container
+#   Docker applications using a single YAML file.
+#
+# Why do we need it?
+#   Our project needs TWO services running at the same time:
+#     1. PostgreSQL  - stores users, logs, rate limit config
+#     2. Redis       - stores rate limit counters (used by SlowAPI)
+#
+#   Without Docker Compose, you would need to:
+#     - Install PostgreSQL manually
+#     - Install Redis manually
+#     - Configure ports, passwords, users manually
+#     - Hope versions match
+#
+#   With Docker Compose, you just run: docker compose up
+#   and both services start automatically with the right config.
+#
+# How to use:
+#   Start:   docker compose up -d        (-d = detached/background mode)
+#   Stop:    docker compose down
+#   Logs:    docker compose logs -f
+#   Reset:   docker compose down -v      (-v = delete stored data too)
+# =============================================================================
+
+version: "3.9"
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Service
+  # ---------------------------------------------------------------------------
+  # This is our main database. It stores:
+  #   - users table
+  #   - request_logs table
+  #   - rate_limit_config table
+  #
+  # We use the official postgres:16 image from Docker Hub.
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16                    # Use PostgreSQL version 16
+    container_name: ratelimit_postgres    # Give it a friendly name
+    restart: unless-stopped               # Auto-restart if it crashes
+    environment:
+      POSTGRES_USER: ratelimit_user       # Database username
+      POSTGRES_PASSWORD: ratelimit_pass   # Database password (change in prod!)
+      POSTGRES_DB: ratelimit_db           # Database name to create
+    ports:
+      - "5433:5432"  
+      # Map host port 5433 → container port 5432
+      # We use 5433 (not 5432) to avoid conflict with your existing local PostgreSQL
+      # Your local Postgres: port 5432
+      # This Docker Postgres: port 5433
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # This "volume" persists your database data even if the container is deleted.
+      # Without this, ALL DATA would be lost every time you run `docker compose down`.
+
+  # ---------------------------------------------------------------------------
+  # Redis Service
+  # ---------------------------------------------------------------------------
+  # Redis is an in-memory data store (super fast key-value store).
+  # SlowAPI uses Redis to store rate limit counters like:
+  #   "user:42 has made 87 requests in the last 60 seconds"
+  #
+  # Why Redis instead of just memory?
+  #   - Memory counters reset if the server restarts → users get "free" requests
+  #   - Redis persists counters across server restarts (production-safe)
+  #   - Redis supports atomic increment operations (no race conditions)
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine                 # Lightweight Redis 7 image
+    container_name: ratelimit_redis       # Give it a friendly name
+    restart: unless-stopped
+    ports:
+      - "6379:6379"                       # Redis default port (no conflict risk)
+    command: redis-server --appendonly yes
+    # --appendonly yes = enable persistence (data survives container restarts)
+    volumes:
+      - redis_data:/data                  # Persist Redis data
+
+# -----------------------------------------------------------------------------
+# Named Volumes
+# -----------------------------------------------------------------------------
+# These are Docker-managed storage areas on your machine.
+# They survive `docker compose down` but are deleted with `docker compose down -v`.
+# -----------------------------------------------------------------------------
+volumes:
+  postgres_data:
+  redis_data:

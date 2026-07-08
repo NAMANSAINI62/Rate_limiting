@@ -1,0 +1,5 @@
+# alembic/versions/__init__.py
+# This folder stores all migration version files.
+# Each migration is a numbered Python file like:
+#   2024_01_15_1430_abc123_add_users_table.py
+# Alembic manages these files — don't rename or delete them manually.
