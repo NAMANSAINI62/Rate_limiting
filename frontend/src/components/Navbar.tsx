@@ -18,6 +18,11 @@ export default function Navbar() {
         <div>
           {user ? (
             <div className="flex items-center gap-4">
+              {user.role === 'admin' && (
+                <Link to="/dashboard" className="text-blue-500 font-medium hover:text-blue-400 transition-colors">
+                  Dashboard
+                </Link>
+              )}
               <span className="text-gray-300">
                 Welcome, <strong className="text-white">{user.username}</strong>
               </span>
@@ -28,12 +33,7 @@ export default function Navbar() {
                 <LogOut className="w-4 h-4" /> Logout
               </button>
             </div>
-          ) : (
-            <div className="flex gap-3">
-              <Link to="/login" className="px-4 py-2 text-sm font-medium text-gray-300 bg-transparent border border-gray-600 rounded-md hover:bg-gray-700 transition-colors">Login</Link>
-              <Link to="/signup" className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">Sign Up</Link>
-            </div>
-          )}
+          ) : null}
         </div>
       </div>
     </nav>
