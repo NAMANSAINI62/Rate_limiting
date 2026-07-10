@@ -7,7 +7,7 @@ from app.config.settings import settings
 async def lifespan(app: FastAPI):
     yield
 
-from app.api import auth, users
+from app.api import auth, users, admin
 
 app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION, description='A learning project demonstrating API Rate Limiting.', lifespan=lifespan)
 
@@ -21,6 +21,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(users.router)
+app.include_router(admin.router)
 
 @app.get('/health', tags=['System'])
 async def health_check():
