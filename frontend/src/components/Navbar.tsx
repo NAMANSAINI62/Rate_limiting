@@ -26,8 +26,8 @@ export default function Navbar() {
               <span className="text-gray-300">
                 Welcome, <strong className="text-white">{user.username}</strong>
               </span>
-              <button 
-                onClick={logout} 
+              <button
+                onClick={logout}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 bg-transparent border border-gray-600 rounded-md hover:bg-gray-700 transition-colors"
               >
                 <LogOut className="w-4 h-4" /> Logout
